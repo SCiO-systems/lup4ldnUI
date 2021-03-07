@@ -1,0 +1,74 @@
+.range-legend {
+    width: 350px;
+    padding-left:20px;
+}
+
+.range-legend-title{
+    padding-top: 40px;
+    font-weight: 600;
+    text-align: left;
+}
+
+.range-legend-subtitle{
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.panel{
+    margin: 20px 0;
+    text-align: left;
+
+}
+
+.panel-title-container{
+    color: black;
+    font-size: 18px;
+    font-weight: 400;
+    opacity: 0.8;
+    text-transform: uppercase;
+}
+
+.panel-content-container{
+    margin: 20px 0;
+    text-align: left;
+}
+
+.first-panel-title{
+    color: #46a084;
+    font-weight: 600;
+}
+
+.first-panel-subtitle{
+    color: black;
+    font-size: 32px;
+    font-weight: 600;
+}
+
+.second-panel-title{
+    color: #0e62bd;
+    font-weight: 600;
+}
+
+.second-panel-subtitle{
+    color: black;
+    font-size: 32px;
+    font-weight: 600;
+}
+
+.third-panel-subtitle{
+    color: #6f6f6f;
+    font-size: 26px;
+    font-weight: 600;
+}
+
+.fourth-panel-subtitle{
+    color: #dc3545;
+    font-weight: 600;
+}
+
+
+
+
+
+

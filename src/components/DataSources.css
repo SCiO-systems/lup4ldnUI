@@ -1,0 +1,17 @@
+.column-source{
+    padding-top:20px;
+}
+
+.column-icon{
+    width: 150px;
+    text-align:center;
+}
+
+.column-description{
+    text-align:justify
+}
+
+.column-img{
+    width: 134px;
+    padding-top:4px;
+}

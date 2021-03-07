@@ -1,0 +1,63 @@
+.rcp-header{
+    background-color:#fff;
+    margin-bottom: 80px;
+    position:relative;
+    box-shadow: 0 2px 16px rgba(0, 0, 0, .1);
+    border-bottom: 1px solid #ddd;
+    width: 350px;
+}
+
+
+.rcp-basic-content{
+    padding-left:20px;
+    padding-top: 40px;
+    font-size: 17px;
+    font-weight:500;
+    text-align: left;
+}
+
+
+.rcp-chart-header{
+    padding-top:20px
+}
+
+
+.rcp-chart-header-align{
+    padding-top:24px
+}
+
+.rcp-selector{
+    font-size: 22px;
+    font-weight: 500;padding-right: 20px;
+    color: goldenrod
+}
+
+.rcp-panel{
+    margin: 20px;
+    text-align: left;
+}
+
+.rcp-panel-subtitle{
+    color: black;
+    font-size: 24px;
+    font-weight: 400;
+    opacity: 0.8;
+    text-transform: uppercase;
+}
+
+.rcp-panel-color-1{
+    font-weight: 600;
+    color: #46a084;
+}
+
+.rcp-panel-color-2{
+    font-weight: 600;
+    color: #dc3545;
+}
+
+.rcp-big-font{
+    font-size: 20px;
+}
+
+
+
