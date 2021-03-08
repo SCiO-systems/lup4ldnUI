@@ -279,7 +279,10 @@ export const TableDemo = () => {
             <div className="p-col-12">
                 <div className="card">
                     <h5>Row Group</h5>
-                    <DataTable value={customer3} rowGroupMode="subheader" className="p-datatable-customers" groupField="representative.name" sortMode="single" sortField="representative.name" sortOrder={1}
+                    <DataTable value={customer3}
+                               rowGroupMode="subheader"
+                               className="p-datatable-customers" g
+                               roupField="representative.name" sortMode="single" sortField="representative.name" sortOrder={1}
                         rowGroupHeaderTemplate={headerRowGroup} rowGroupFooterTemplate={footerRowGroup}>
                         <Column field="representative.name" header="Representative"></Column>
                         <Column field="name" header="Name" body={bodyTemplate}></Column>

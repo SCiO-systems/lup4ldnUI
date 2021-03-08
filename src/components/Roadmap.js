@@ -84,6 +84,21 @@ export const Roadmap = (props) => {
                     className="vertical-timeline-element--education"
                     contentStyle={{ background: '#E3E3E3', color: '#030607' }}
                     contentArrowStyle={{ borderRight: '7px solid  #E3E3E3' }}
+                    date="Jun. 2021"
+                    iconStyle={{ background: '#46a084', color: '#fff' }}
+                    icon={<i className="fad fa-bullseye-arrow fa-3x" style={{paddingLeft:"10px",paddingTop:"9px"}}></i>}
+
+                >
+                    <h3 className="vertical-timeline-element-title">Iterative Piloting</h3>
+
+                    <p>
+                        Tool testing and validation from consortium stakeholder representatives
+                    </p>
+                </VerticalTimelineElement>
+                <VerticalTimelineElement
+                    className="vertical-timeline-element--education"
+                    contentStyle={{ background: '#E3E3E3', color: '#030607' }}
+                    contentArrowStyle={{ borderRight: '7px solid  #E3E3E3' }}
                     date="Aug. 2021"
                     iconStyle={{ background: '#46a084', color: '#fff' }}
                     icon={<i className="fad fa-bullseye-arrow fa-3x" style={{paddingLeft:"10px",paddingTop:"9px"}}></i>}
@@ -98,6 +113,21 @@ export const Roadmap = (props) => {
                             <li>Optimized Caching and storage mechanisms</li>
                         </ul>
 
+                    </p>
+                </VerticalTimelineElement>
+                <VerticalTimelineElement
+                    className="vertical-timeline-element--education"
+                    contentStyle={{ background: '#E3E3E3', color: '#030607' }}
+                    contentArrowStyle={{ borderRight: '7px solid  #E3E3E3' }}
+                    date="Sep. 2021"
+                    iconStyle={{ background: '#46a084', color: '#fff' }}
+                    icon={<i className="fad fa-bullseye-arrow fa-3x" style={{paddingLeft:"10px",paddingTop:"9px"}}></i>}
+
+                >
+                    <h3 className="vertical-timeline-element-title">User-validated Version</h3>
+
+                    <p>
+                        Tool fully assessed by consortium stakeholder representatives
                     </p>
                 </VerticalTimelineElement>
                 <VerticalTimelineElement
@@ -123,13 +153,10 @@ export const Roadmap = (props) => {
                     icon={<i className="fad fa-bullseye-arrow fa-3x" style={{paddingLeft:"10px",paddingTop:"9px"}}></i>}
 
                 >
-                    <h3 className="vertical-timeline-element-title">Piloting and Capacity Building</h3>
+                    <h3 className="vertical-timeline-element-title">Capacity Building</h3>
 
                     <p>
-                        <ul>
-                            <li>Tool testing and validation from consortium stakeholder representatives</li>
-                            <li>Open workshop and webinars with global participation</li>
-                        </ul>
+                        Open workshop and webinars with global participation
                     </p>
                 </VerticalTimelineElement>
                 <VerticalTimelineElement

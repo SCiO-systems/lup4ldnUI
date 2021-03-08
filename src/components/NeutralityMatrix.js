@@ -12,6 +12,7 @@ export const NeutralityMatrix = (props) => {
     const [loading2, setLoading2] = useState(true);
     const [scenarioName,setScenarioName] = useState(null)
 
+    const [lastRow,setLastRow] = useState(null);
 
     const format = (num,decimals) => {
         return num.toFixed(decimals).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
@@ -20,8 +21,6 @@ export const NeutralityMatrix = (props) => {
 
     useEffect(() => {
         if(props.scenario !== undefined){
-
-
             var headerTitle = "Scenario "+props.scenario.scenarioStart +" - "+props.scenario.scenarioEnd
             setScenarioName(headerTitle);
 
@@ -47,8 +46,8 @@ export const NeutralityMatrix = (props) => {
                         row.title = "Water body"
                     }
 
-                    row.landCoverage = format(item.landCoverage,2);
-                    row.impact = format(props.scenario.impacts[index].impact,2);
+                    row.impactValue = format(item.landCoverage,2)+" ha";
+                    row.impactClass = format(props.scenario.impacts[index].impact,2)+" ha";
 
                     sumLC = sumLC + item.landCoverage;
                     sumImpact = sumImpact + props.scenario.impacts[index].impact;
@@ -57,51 +56,81 @@ export const NeutralityMatrix = (props) => {
                 }
             )
 
-            var totalRow = {
-                title: "Total",
-                landCoverage: format(sumLC,2),
-                impact: format(sumImpact,2)
+            var state = "NO CHANGE";
+            var impactValue = "";
+            var impactLabel = "";
+            if(sumImpact>0){
+                state = "IMPROVED";
+                impactValue = format(Math.abs(sumImpact),2)
+                impactLabel = "( "+impactValue+" ha )";
+            }else if(sumImpact<0){
+                state = "DEGRADED";
+                impactValue = format(Math.abs(sumImpact),2)
+                impactLabel = "( "+impactValue+" ha )";
             }
 
-            tabularScenario.push(totalRow);
+            var totalRow = {
+                title: "Land Degradation Balance",
+                impactValue: impactValue,
+                impactClass: state
+            }
+
+            //tabularScenario.push(totalRow);
+
+            var last = "LAND DEGRADATION BALANCE: "+state+" "+impactLabel;
+
+            setLastRow(last);
 
             setScenario(tabularScenario);
             setLoading2(false);
         }
 
-    }, []);
+    }, [props.scenario]);
 
     const staticColumn = (data, props) => {
         return (
-            <>
+            <div >
                 {data.title}
-            </>
+            </div>
         );
     };
 
     const impactColumn = (data, props) => {
         return (
-            <>
-                {data.impact} ha
-            </>
+            <div style={{textAlign:"right"}}>
+                {data.impactClass}
+            </div>
         );
     };
 
     const coverageColumn = (data, props) => {
         return (
-            <>
-                {data.landCoverage} ha
-            </>
+            <div style={{textAlign:"right"}}>
+                {data.impactValue}
+            </div>
         );
     };
 
     const header =(
             <div className="table-header">
-                {scenarioName}
+                <div className="p-grid p-col-12 justify-content-between  vertical-container">
+                    <div>
+                        {
+                            scenarioName
+                        }
+                    </div>
+                    <div>
+                        <Button icon="fad fa-map" label="Neutrality Map"/>
+                    </div>
+                </div>
             </div>
         )
 
-
+    const footerRowGroup = (
+        <div>
+            {lastRow}
+        </div>
+    );
 
     return (
         <div>
@@ -120,6 +149,7 @@ export const NeutralityMatrix = (props) => {
                                 loading={loading2}
                                 editMode="row"
                                 header = {header}
+                                footer={footerRowGroup}
                             >
 
                                 <Column
@@ -128,11 +158,13 @@ export const NeutralityMatrix = (props) => {
                                     body={staticColumn}>
                                 </Column>
                                 <Column
+                                    style={{textAlign:"center"}}
                                     field="impact"
                                     header="Land Degradation Impact"
                                     body={impactColumn}>
                                 </Column>
                                 <Column
+                                    style={{textAlign:"center"}}
                                     field="landcoverage"
                                     header="Land Coverage"
                                     body={coverageColumn}>

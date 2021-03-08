@@ -44,6 +44,7 @@ export const History = () => {
     const [sliderValue, setSliderValue] = useState('2018');
     const [endSliderValue, setEndSliderValue] = useState('2018');
     const [collapsedMap, setCollapsedMap] = useState(true);
+    const [focusAreaLayer,setFocusAreaLayer] = useState(null);
 
     const [dataUploadSelection, setDataUploadSelection] = useState(false);
     const [dataLDUploadSelection, setLDDataUploadSelection] = useState(true);

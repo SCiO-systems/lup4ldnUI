@@ -30,6 +30,7 @@ import {Fieldset} from "primereact/components/fieldset/Fieldset";
 import {QuestionPanel} from "./QuestionPanel";
 import {LandManagementFlowerGraph} from "./LandManagementFlowerGraph";
 import {NeutralityMatrix} from "./NeutralityMatrix";
+import {WaterfallGraph} from "./WaterfallGraph";
 
 
 export const ScenarioBuilder = (props) => {
@@ -49,7 +50,7 @@ export const ScenarioBuilder = (props) => {
     const [key, setKey] = useState('anticipated_land_degradation');
     const [ldnHidden, setLDNHidden] = useState(true);
     const [ldHidden, setLDHidden] = useState(false);
-    const [sdgHidden, setSDGHidden] = useState(false);
+    const [sdgHidden, setSDGHidden] = useState(true);
     const [lastSave, setLastSave] = useState(false);
 
     const [step1hidden, setStep1Hidden] = useState(false);
@@ -70,8 +71,6 @@ export const ScenarioBuilder = (props) => {
     const [maxDate,setMaxDate] = useState(2030);
 
     const [socCalculationScenarios,setSocCalculationScenarios] = useState(null);
-
-
     const [newScenarioState, setNewScenarioState] = useState(false);
     const [deleteState, setDeleteState] = useState(true);
     const [overviewState, setOverviewState] = useState(true);
@@ -91,6 +90,8 @@ export const ScenarioBuilder = (props) => {
     const [layersData, setLayersData] = useState(null);
 
     const [gaugeValues, setGaugeValues] = useState(undefined)
+    const [waterfallValues, setWaterfallValues] = useState(undefined)
+
     const [noNewProject, setNoNewProject] = useState(false);
 
 
@@ -1436,9 +1437,6 @@ export const ScenarioBuilder = (props) => {
         const regionLandCoverTypes = ls.get("regionLandCoverTypes");
 
         initializeLUQuestionnaires();
-
-
-
         if(regionDetails
             && Object.keys(regionDetails).length === 0 && regionDetails.constructor === Object){
             setNoNewProject(true);
@@ -1494,6 +1492,7 @@ export const ScenarioBuilder = (props) => {
         }
 
 
+
     }, []);
 
     const interactiveItems = [
@@ -1533,8 +1532,6 @@ export const ScenarioBuilder = (props) => {
 
 
     const chosenTabValue = (value) => {
-
-        console.log(value)
 
         if(value === "anticipated_land_degradation"){
             setLDHidden(false);
@@ -1762,10 +1759,9 @@ export const ScenarioBuilder = (props) => {
         }else{
             const newScenario = scenarios.map(
                 (item,i)=>{
-                    if(scenarios.length === i+1){
+                    if(scenarios.length-1 === i){
                         //Deep Copy
                         let copiedItem = JSON.parse(JSON.stringify(item));
-
                         copiedItem.scenarioName = "Scenario "+scenarioStartDate+"-"+scenarioEndDate;
                         copiedItem.scenarioPeriod.scenarioStart = scenarioStartDate;
                         copiedItem.scenarioPeriod.scenarioEnd = scenarioEndDate;
@@ -1787,8 +1783,9 @@ export const ScenarioBuilder = (props) => {
                     }
                 }
             )
+
             let addScenario = scenarios;
-            addScenario.push(newScenario[0]);
+            addScenario.push(newScenario[newScenario.length-1]);
             setScenarios([...addScenario]);
         }
 
@@ -2378,8 +2375,7 @@ export const ScenarioBuilder = (props) => {
 
     const onStatusRowEditCancel = (event) => {
 
-        console.log(originalRows);
-        console.log(event.index);
+
 
         //delete originalRows[event.index];
 
@@ -2666,6 +2662,326 @@ export const ScenarioBuilder = (props) => {
                 }
             </div>
         )
+    }
+
+    const calculateNeutralityMatrix = () =>{
+        if(socMatrix === false){
+            const comatrix = customer2.map(
+                (coitem)=>{
+                    var row = {values:[]};
+                    coitem.row.forEach(
+                        (cell) => {
+                            if (typeof cell.value === 'string'){
+                                row.values.push(parseFloat(cell.value));
+                            }else{
+                                row.values.push(cell.value);
+                            }
+                        }
+                    )
+                    return row;
+                }
+            )
+
+            const impact = landCoverItem.map(
+                (lcItem)=>{
+                    var row = {values:[]};
+                    lcItem.row.forEach(
+                        (cell) => {
+                            if(cell.value === "+"){
+                                row.values.push(1);
+                            }else if(cell.value === "-"){
+                                row.values.push(-1);
+                            }else{
+                                row.values.push(0);
+                            }
+                        }
+                    )
+
+                    return row;
+                }
+            )
+
+            var totalYears = 0;
+
+            const impactScenarios = scenarios.map(
+                (scenario) => {
+
+                    var scenarioStart = scenario.scenarioPeriod.scenarioStart;
+                    var scenarioEnd = scenario.scenarioPeriod.scenarioEnd;
+
+                    if(scenarioStart
+                        === scenarioEnd){
+                        scenarioEnd = 2030
+                    }
+                    totalYears = totalYears+(scenarioEnd - scenarioStart);
+
+                    var item = {
+                        scenarioStart:scenarioStart,
+                        scenarioEnd:scenarioEnd,
+                        scenarioPeriod: (scenarioEnd - scenarioStart)+1,
+                        landTypes: scenario.landTypes
+                    }
+
+                    return item;
+                }
+            )
+
+            const scenarioSOC = {
+                totalYears: totalYears+1,
+                scenarios:impactScenarios,
+                impactMatrix:impact,
+                comatrix:comatrix
+
+            }
+
+            const regionDetails = ls.get("regionDetails");
+
+            const qvantumService = new QvantumService();
+            qvantumService.calculateSOCScenario(regionDetails,scenarioSOC).then(
+                (socScenarios)=>{
+                    setSocCalculationScenarios(socScenarios);
+                    const regionLandCoverTypes = ls.get("regionLandCoverTypes");
+                    var initialDegradation = -1*regionLandCoverTypes.initialHectares;
+                    var lastValue = -1*regionLandCoverTypes.initialHectares;
+                    var lastDate = 0;
+
+
+                    var initialColor = "#d43333";
+                    if(initialDegradation>=0){
+                        initialColor= "#398e3b";
+                    }else if(initialDegradation<0){
+                        initialColor= "#d43333";
+                    }
+
+                    var initialColumn = {
+                        category:"2021",
+                        value:initialDegradation,
+                        open:0,
+                        stepValue:initialDegradation,
+                        color:initialColor,
+                        displayValue:initialDegradation
+                    }
+
+                    var waterfall = socScenarios.data.scenarios.map(
+                        (scenarioLocal) =>{
+                            var category = "( "
+                                +scenarioLocal.scenarioStart + " - "+ scenarioLocal.scenarioEnd+" )";
+                            var value = lastValue + scenarioLocal.total_impact_sum;
+                            var open = lastValue;
+                            var stepValue = lastValue + scenarioLocal.total_impact_sum;
+                            var displayValue = scenarioLocal.total_impact_sum;
+
+
+
+                            var color = "#d43333";
+                            if(displayValue>=0){
+                                color= "#398e3b";
+                            }else if(displayValue<0){
+                                color= "#d43333";
+                            }
+
+                            var column = {
+                                category:category,
+                                value:value,
+                                open:open,
+                                stepValue:stepValue,
+                                color:color,
+                                displayValue:displayValue
+                            }
+
+                            lastValue = value;
+
+                            if(lastDate < scenarioLocal.scenarioEnd ){
+                                lastDate = scenarioLocal.scenarioEnd;
+
+                            }
+                            return column;
+                        }
+                    );
+
+                    var lastColor = "#d43333";
+                    if(waterfall[waterfall.length-1].value>=0){
+                        lastColor= "#398e3b";
+                    }else if(waterfall[waterfall.length-1].value<0){
+                        lastColor= "#d43333";
+                    }
+
+                    var lastColumn = {
+                        category:lastDate.toString(),
+                        value:waterfall[waterfall.length-1].value,
+                        open:0,
+                        stepValue:waterfall[waterfall.length-1].stepValue,
+                        color:lastColor,
+                        displayValue:waterfall[waterfall.length-1].value
+                    }
+                    waterfall.unshift(initialColumn);
+                    waterfall.push(lastColumn);
+
+                    setWaterfallValues(waterfall);
+                }
+            )
+
+
+        }
+        else{
+
+            const comatrix = customer2.map(
+                (coitem)=>{
+                    var row = {values:[]};
+                    coitem.row.forEach(
+                        (cell) => {
+                            row.values.push(1);
+                        }
+                    )
+                    return row;
+                }
+            )
+
+            const impact = landCoverItem.map(
+                (lcItem)=>{
+                    var row = {values:[]};
+                    lcItem.row.forEach(
+                        (cell) => {
+                            if(cell.value === "+"){
+                                row.values.push(1);
+                            }else if(cell.value === "-"){
+                                row.values.push(-1);
+                            }else{
+                                row.values.push(0);
+                            }
+                        }
+                    )
+
+                    return row;
+                }
+            )
+
+            var totalYears = 0;
+
+            const impactScenarios = scenarios.map(
+                (scenario) => {
+
+                    var scenarioStart = scenario.scenarioPeriod.scenarioStart;
+                    var scenarioEnd = scenario.scenarioPeriod.scenarioEnd;
+
+                    if(scenarioStart
+                        === scenarioEnd){
+                        scenarioEnd = 2030
+                    }
+                    totalYears = totalYears+(scenarioEnd - scenarioStart);
+
+                    var item = {
+                        scenarioStart:scenarioStart,
+                        scenarioEnd:scenarioEnd,
+                        scenarioPeriod: (scenarioEnd - scenarioStart)+1,
+                        landTypes: scenario.landTypes
+                    }
+
+                    return item;
+                }
+            )
+
+
+            const scenarioSOC = {
+                totalYears: totalYears+1,
+                scenarios:impactScenarios,
+                impactMatrix:impact,
+                comatrix:comatrix
+
+            }
+
+            const regionDetails = ls.get("regionDetails");
+
+            const qvantumService = new QvantumService();
+            qvantumService.calculateSOCScenario(regionDetails,scenarioSOC).then(
+                (socScenarios)=>{
+                    setSocCalculationScenarios(socScenarios);
+
+                    const regionLandCoverTypes = ls.get("regionLandCoverTypes");
+                    var initialDegradation = -1*regionLandCoverTypes.initialHectares;
+                    var lastValue = -1*regionLandCoverTypes.initialHectares;
+                    var lastDate = 0;
+
+
+                    var initialColor = "#d43333";
+                    if(initialDegradation>=0){
+                        initialColor= "#398e3b";
+                    }else if(initialDegradation<0){
+                        initialColor= "#d43333";
+                    }
+
+                    var initialColumn = {
+                        category:"2021",
+                        value:initialDegradation,
+                        open:0,
+                        stepValue:initialDegradation,
+                        color:initialColor,
+                        displayValue:initialDegradation
+                    }
+
+                    var waterfall = socScenarios.data.scenarios.map(
+                        (scenarioLocal) =>{
+                            var category = "( "
+                                +scenarioLocal.scenarioStart + " - "+ scenarioLocal.scenarioEnd+" )";
+                            var value = lastValue + scenarioLocal.total_impact_sum;
+                            var open = lastValue;
+                            var stepValue = lastValue + scenarioLocal.total_impact_sum;
+                            var displayValue = scenarioLocal.total_impact_sum;
+
+
+
+                            var color = "#d43333";
+                            if(displayValue>=0){
+                                color= "#398e3b";
+                            }else if(displayValue<0){
+                                color= "#d43333";
+                            }
+
+                            var column = {
+                                category:category,
+                                value:value,
+                                open:open,
+                                stepValue:stepValue,
+                                color:color,
+                                displayValue:displayValue
+                            }
+
+                            lastValue = value;
+
+                            if(lastDate < scenarioLocal.scenarioEnd ){
+                                lastDate = scenarioLocal.scenarioEnd;
+
+                            }
+                            return column;
+                        }
+                    );
+
+                    var lastColor = "#d43333";
+                    if(waterfall[waterfall.length-1].value>=0){
+                        lastColor= "#398e3b";
+                    }else if(waterfall[waterfall.length-1].value<0){
+                        lastColor= "#d43333";
+                    }
+
+                    var lastColumn = {
+                        category:lastDate.toString(),
+                        value:waterfall[waterfall.length-1].value,
+                        open:0,
+                        stepValue:waterfall[waterfall.length-1].stepValue,
+                        color:lastColor,
+                        displayValue:waterfall[waterfall.length-1].value
+                    }
+                    waterfall.unshift(initialColumn);
+                    waterfall.push(lastColumn);
+
+                    setWaterfallValues(waterfall);
+
+
+                }
+            )
+
+
+        }
     }
 
     return (
@@ -2968,170 +3284,9 @@ export const ScenarioBuilder = (props) => {
                                             setStep2Hidden(true);
                                             setStep3Hidden(true);
                                             setStep4Hidden(false);
-                                            setProgressBarValue(progressBarValue+25);
-
-                                            if(socMatrix === false){
-                                                const comatrix = customer2.map(
-                                                    (coitem)=>{
-                                                        var row = {values:[]};
-                                                        coitem.row.forEach(
-                                                            (cell) => {
-                                                                if (typeof cell.value === 'string'){
-                                                                    row.values.push(parseFloat(cell.value));
-                                                                }else{
-                                                                    row.values.push(cell.value);
-                                                                }
-                                                            }
-                                                        )
-                                                        return row;
-                                                    }
-                                                )
-
-                                                const impact = landCoverItem.map(
-                                                    (lcItem)=>{
-                                                        var row = {values:[]};
-                                                        lcItem.row.forEach(
-                                                            (cell) => {
-                                                                if(cell.value === "+"){
-                                                                    row.values.push(1);
-                                                                }else if(cell.value === "-"){
-                                                                    row.values.push(-1);
-                                                                }else{
-                                                                    row.values.push(0);
-                                                                }
-                                                            }
-                                                        )
-
-                                                        return row;
-                                                    }
-                                                )
-
-                                                var totalYears = 0;
-
-                                                const impactScenarios = scenarios.map(
-                                                    (scenario) => {
-
-                                                        var scenarioStart = scenario.scenarioPeriod.scenarioStart;
-                                                        var scenarioEnd = scenario.scenarioPeriod.scenarioEnd;
-
-                                                        if(scenarioStart
-                                                            === scenarioEnd){
-                                                            scenarioEnd = 2030
-                                                        }
-                                                        totalYears = totalYears+(scenarioEnd - scenarioStart);
-
-                                                        var item = {
-                                                            scenarioStart:scenarioStart,
-                                                            scenarioEnd:scenarioEnd,
-                                                            scenarioPeriod: (scenarioEnd - scenarioStart)+1,
-                                                            landTypes: scenario.landTypes
-                                                        }
-
-                                                        return item;
-                                                    }
-                                                )
-
-
-                                                const scenarioSOC = {
-                                                    totalYears: totalYears+1,
-                                                    scenarios:impactScenarios,
-                                                    impactMatrix:impact,
-                                                    comatrix:comatrix
-
-                                                }
-
-                                                const regionDetails = ls.get("regionDetails");
-
-                                                const qvantumService = new QvantumService();
-                                                qvantumService.calculateSOCScenario(regionDetails,scenarioSOC).then(
-                                                    (socScenarios)=>{
-                                                        setSocCalculationScenarios(socScenarios);
-                                                        console.log(socScenarios);
-                                                    }
-                                                )
-
+                                            setProgressBarValue(progressBarValue + 25);
+                                            calculateNeutralityMatrix();
                                             }
-                                            else{
-
-                                                const comatrix = customer2.map(
-                                                    (coitem)=>{
-                                                        var row = {values:[]};
-                                                        coitem.row.forEach(
-                                                            (cell) => {
-                                                                row.values.push(1);
-                                                            }
-                                                        )
-                                                        return row;
-                                                    }
-                                                )
-
-                                                const impact = landCoverItem.map(
-                                                    (lcItem)=>{
-                                                        var row = {values:[]};
-                                                        lcItem.row.forEach(
-                                                            (cell) => {
-                                                                if(cell.value === "+"){
-                                                                    row.values.push(1);
-                                                                }else if(cell.value === "-"){
-                                                                    row.values.push(-1);
-                                                                }else{
-                                                                    row.values.push(0);
-                                                                }
-                                                            }
-                                                        )
-
-                                                        return row;
-                                                    }
-                                                )
-
-                                                var totalYears = 0;
-
-                                                const impactScenarios = scenarios.map(
-                                                    (scenario) => {
-
-                                                        var scenarioStart = scenario.scenarioPeriod.scenarioStart;
-                                                        var scenarioEnd = scenario.scenarioPeriod.scenarioEnd;
-
-                                                        if(scenarioStart
-                                                            === scenarioEnd){
-                                                            scenarioEnd = 2030
-                                                        }
-                                                        totalYears = totalYears+(scenarioEnd - scenarioStart);
-
-                                                        var item = {
-                                                            scenarioStart:scenarioStart,
-                                                            scenarioEnd:scenarioEnd,
-                                                            scenarioPeriod: (scenarioEnd - scenarioStart)+1,
-                                                            landTypes: scenario.landTypes
-                                                        }
-
-                                                        return item;
-                                                    }
-                                                )
-
-
-                                                const scenarioSOC = {
-                                                    totalYears: totalYears+1,
-                                                    scenarios:impactScenarios,
-                                                    impactMatrix:impact,
-                                                    comatrix:comatrix
-
-                                                }
-
-                                                const regionDetails = ls.get("regionDetails");
-
-                                                const qvantumService = new QvantumService();
-                                                console.log(JSON.stringify(scenarioSOC))
-                                                qvantumService.calculateSOCScenario(regionDetails,scenarioSOC).then(
-                                                    (socScenarios)=>{
-                                                        setSocCalculationScenarios(socScenarios);
-                                                    }
-                                                )
-
-                                            }
-
-                                            }
-
                                         }
                                     />
                                 </div>
@@ -3189,6 +3344,14 @@ export const ScenarioBuilder = (props) => {
                                         )
                                         :console.log()
                                 }
+                            </div>
+                            <div className="p-grid p-justify-center p-mt-6">
+                                <h4>Land Degradation Evolution in ROI</h4>
+                            {
+                                waterfallValues?
+                                    <WaterfallGraph data={waterfallValues}/>
+                                    :console.log()
+                            }
                             </div>
                             <div className="p-mt-4 p-grid  p-justify-between p-ml-1 p-mr-1">
                                 <Button

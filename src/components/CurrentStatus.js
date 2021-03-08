@@ -84,6 +84,7 @@ export const CurrentStatus = () => {
     const [noNewProject, setNoNewProject] = useState(false);
 
     const [landSuitability, setLandSuitability] = useState(null);
+    const [focusAreaLayer,setFocusAreaLayer] = useState(null);
 
     const soiListCriteria=[
         {
@@ -539,6 +540,10 @@ export const CurrentStatus = () => {
                             layers[0].administrationLevel = '1';
                             layers[0].point = response;
                             setLayersData(layers);
+                            var regionLayer = {
+                                point:response
+                            }
+                            setFocusAreaLayer(regionLayer);
                         }
                     )
                 }
@@ -945,7 +950,7 @@ export const CurrentStatus = () => {
                                                 </div>
 
                                             </div>
-                                            <div className="p-mt-4 p-grid  p-justify-end p-ml-1 p-mr-1">
+                                            <div className="p-mt-4 p-grid p-col-12 p-justify-end  p-mr-4">
                                                 <Button
                                                     label="Next LU Type"
                                                     className="p-button-raised"
@@ -1274,6 +1279,8 @@ export const CurrentStatus = () => {
                                                 toolbar="simple"
                                                 styleEditor={false}
                                                 zoom={3}
+                                                container="focus"
+                                                regionLayer={focusAreaLayer}
                                             />
                                     </Fieldset>
 

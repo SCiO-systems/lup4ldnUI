@@ -25,6 +25,10 @@ export const TransitionMatrix = (props) => {
 
     }, []);
 
+    const format = (num,decimals) => {
+        return num.toFixed(decimals).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
+    }
+
 
     const onEditorValueChange = (props, value,landId) => {
         var row = scenario.find(function(item) {
@@ -206,13 +210,13 @@ export const TransitionMatrix = (props) => {
 
     const startCoverageHeader = (scenario) =>{
 
-        let startingCoverage = scenario.landCoverage.value+scenario.landCoverage.unit;
+        let startingCoverage = format(scenario.landCoverage.value,2)+" "+scenario.landCoverage.unit;
         return (<>{startingCoverage}</>);
 
     }
 
     const endCoverageHeader = (scenario) =>{
-        let endCoverage = scenario.endLandCoverage.value+scenario.landCoverage.unit;
+        let endCoverage = format(scenario.endLandCoverage.value,2)+" "+scenario.landCoverage.unit;
         return (<>{endCoverage}</>);
 
     }
@@ -235,8 +239,8 @@ export const TransitionMatrix = (props) => {
                         >
                             <Column expander headerStyle={{ width: '3rem' }} />
                             <Column field="landType" header="Land Type" body={basicColumn}></Column>
-                            <Column field="landCoverage" header={scenarioStart} body={startCoverageHeader}></Column>
-                            <Column field="landCoverage" header={scenarioEnd} body={endCoverageHeader}></Column>
+                            <Column style={{textAlign:"right"}} field="landCoverage" header={scenarioStart} body={startCoverageHeader}></Column>
+                            <Column style={{textAlign:"right"}} field="landCoverage" header={scenarioEnd} body={endCoverageHeader}></Column>
                         </DataTable>
                         :console.log()
                 }

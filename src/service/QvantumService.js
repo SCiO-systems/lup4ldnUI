@@ -4,9 +4,12 @@ const AWS = require('aws-sdk/global');
 const S3 = require('aws-sdk/clients/s3');
 
 //const qvantumGeospatialAPI = "http://192.168.122.218:5000";
-const qvantumGeospatialAPI = "https://lup4ldn.scio.services:5000";
+const qvantumGeospatialAPI = "https://demo.scio.services:5000";
+//const qvantumGeospatialAPI = "https://lup4ldn.scio.services:5000";
 
 export default class QvantumService {
+
+
 
     async getSDGFromAPI(identifier,country){
 
@@ -265,7 +268,7 @@ export default class QvantumService {
 
 
         const headers = {
-            'Authorization': 'Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6InpweEpQRjd4Q1RyOUJwQ25SZVJRbSJ9.eyJuaWNrbmFtZSI6InZhbGVyaWEucGVzY2UiLCJuYW1lIjoidmFsZXJpYS5wZXNjZUBmYW8ub3JnIiwicGljdHVyZSI6Imh0dHBzOi8vcy5ncmF2YXRhci5jb20vYXZhdGFyLzY3ZmE5OWE0YTg4NmI0MDZkNjFjMTU4OGE3NzMwMGJlP3M9NDgwJnI9cGcmZD1odHRwcyUzQSUyRiUyRmNkbi5hdXRoMC5jb20lMkZhdmF0YXJzJTJGdmEucG5nIiwidXBkYXRlZF9hdCI6IjIwMjEtMDMtMDFUMTM6NTI6MjEuNDE2WiIsImVtYWlsIjoidmFsZXJpYS5wZXNjZUBmYW8ub3JnIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsImlzcyI6Imh0dHBzOi8vZ2FyZGlhbi5ldS5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NjAxYmU5ZTU3Y2VjMjIwMDZhMzliMjIwIiwiYXVkIjoibEl6ZHVqT3hKeW9od2xlWnZzR1NKV29DRXc5cFFCeFEiLCJpYXQiOjE2MTQ2MDY3NDEsImV4cCI6MTYxNDY0Mjc0MX0.GGTm1YSOZ8ueMpEMOH_AhbjfrjoAwmCgEwbicU0nIx4CilrNZSHup9R6G-p9Td_CcPWvmzg9U0uIDUEOg31-F0mzESKuvoVv7QMUtkxohHbRLcdxOuOEvA5xla-jqQs0PORNYbYT8ZVZ-sPWVeLFOF-IyEgd8oowAIsjV7V9oqka-e97Cg9SdJOZSmBP1cVThpW2OzfpY5TtyGNcP0ZGLnvgIoJ5MaN75U61TIMPQ2fW-ysbFIna8tBWa9kpeYziskOPuoQ6cLCNpWHwSa2qrLV49JOAUHCGApmEFvQKYq6Kshe_5NmiTLcw1hyKg0ioGr_QKn1fQ6U1LU1Lr8AQ_A',
+            'Authorization': 'Bearer ',
             'accept': 'application/json',
             'Content-Type' : 'multipart/form-data',
             'Access-Control-Allow-Origin': "*"
@@ -300,7 +303,7 @@ export default class QvantumService {
             url: ' https://elasticsearch.scio.services/api/v2/getGADMPolygon.php',
             headers: {
                 'accept': 'application/json',
-                'authorization': 'Bearer yg-kDaM8cKLhSubMh_Q6Ckn-4whExUyr',
+                'authorization': 'Bearer ',
                 'Content-Type': 'multipart/form-data'
             },
             data : data

@@ -87,6 +87,8 @@ export const Glowglobe = (props) => {
     const sidebyside = useRef();
     const legend = useRef();
 
+    const [containerName, setContainerName] = useState("glowglobe");
+
     const fullToolbar = {
         position:'topright',
         drawMarker: true,
@@ -940,8 +942,34 @@ export const Glowglobe = (props) => {
                 }
             })
     }
+
+    const loadSelectedRegion = ()=>{
+        if (props.regionLayer.point !== undefined) {
+            let regionLayer = L.geoJSON(props.regionLayer.point, {
+                style: function (feature) {
+                    return {
+                        color: 'black',
+                        opacity: 1,
+                        weight: 2,
+                        fillOpacity: .1
+                    };
+                }
+            });
+            console.log(regionLayer);
+            regionLayer.addTo(glowglobe.current);
+            glowglobe.current.fitBounds(regionLayer.getBounds());
+        }
+    }
     useEffect(() => {
+
+        if(props.container !== undefined){
+            setContainerName(props.container);
+        }
+
         initializeMap();
+        if(props.regionLayer !== undefined){
+            loadSelectedRegion();
+        }
     },[]);
 
     useEffect(() => {
@@ -996,7 +1024,7 @@ export const Glowglobe = (props) => {
     },[props.layers]);
 
     return (
-        <div id="glowglobe" className="p-mb-4 p-mt-4"></div>
+        <div id={containerName} className="p-mb-4 p-mt-4"></div>
     );
 
 }
