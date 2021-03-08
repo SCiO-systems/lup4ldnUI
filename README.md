@@ -15,5 +15,5 @@ Furthermore, the LUP4LDN Frontend exposes all functionality related to the colla
 ## Technologies
 
 The LUP4LDN Frontend is built using 
-[React](https://reactjs.org/)
+[React](https://reactjs.org/) and is served through [Apache](https://httpd.apache.org/)
 
